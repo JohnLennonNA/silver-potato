@@ -18,10 +18,15 @@ class Producer
         return $this;
     }
 
-    public function send($streamName, $event){
+    public function send($streamName, $event, $partitionKey){
         try{
-            $parameter = [ 'StreamName' => $streamName, 'Records' => $event];
-            return $this->client->putRecords($parameter);
+            $parameter = [
+                'StreamName' => $streamName,
+                'Data' => $event,
+                'PartitionKey' => $partitionKey
+            ];
+
+            return $this->client->putRecord($parameter);
         }catch (Exception $e){
             return $e->getMessage();
         }
@@ -29,7 +34,11 @@ class Producer
 
     public function sendMutiple($streamName, $events){
         try{
-            $parameter = [ 'StreamName' => $streamName, 'Records' => []];
+            $parameter = [
+                'StreamName' => $streamName,
+                'Records' => []
+            ];
+
             foreach ($events as $event) {
                 $parameter['Records'][] = $event;
             }
